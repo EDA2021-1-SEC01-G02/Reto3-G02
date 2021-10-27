@@ -50,7 +50,10 @@ while True:
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
         catalog = controller.init()
-        controller,loadData(catalog)
+        to_print = controller.loadData(catalog)
+        print('Numero de elementos: ' + str(to_print[0]))
+        print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
+        print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
 
     elif int(inputs[0]) == 2:
         pass

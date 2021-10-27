@@ -39,8 +39,10 @@ los mismos.
 """
 
 # Construccion de modelos
+def sightSize(catalog):
+    return lt.size(catalog['sights'])
 def init():
-    catalog = {'crimes': None,
+    catalog = {'sights': None,
                 'dateIndex': None
                 }
 
@@ -51,17 +53,17 @@ def init():
 
 # Funciones para agregar informacion al catalogo
 def addSight(catalog, sight):
-    lt.addLast(catalog['crimes'], sight)
+    lt.addLast(catalog['sights'], sight)
     updateDateIndex(catalog['dateIndex'], sight)
     return catalog
 
 def updateDateIndex(catalog, sight):
     occurreddate = sight['datetime']
-    crimedate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
-    entry = om.get(map, crimedate.date())
+    sightDate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
+    entry = om.get(catalog, sightDate.date())
     if entry is None:
         datentry = newDataEntry(sight)
-        om.put(map, crimedate.date(), datentry)
+        om.put(catalog, sightDate.date(), datentry)
     else:
         datentry = me.getValue(entry)
     addDateIndex(datentry, sight)
@@ -69,22 +71,45 @@ def updateDateIndex(catalog, sight):
 
 def addDateIndex(date, sight):
 
-    lst = datentry['lstcrimes']
-    lt.addLast(lst, crime)
-    offenseIndex = datentry['offenseIndex']
-    offentry = m.get(offenseIndex, crime['OFFENSE_CODE_GROUP'])
-    if (offentry is None):
-        entry = newOffenseEntry(crime['OFFENSE_CODE_GROUP'], crime)
-        lt.addLast(entry['lstoffenses'], crime)
-        m.put(offenseIndex, crime['OFFENSE_CODE_GROUP'], entry)
+    lst = date['lstshape']
+    lt.addLast(lst, sight)
+    dateIndex = date['shapeIndex']
+    shapentry = mp.get(dateIndex, sight['shape'])
+    if (shapentry is None):
+        entry = newSightEntry(sight['shape'], sight)
+        lt.addLast(entry['lstsight'], sight)
+        mp.put(dateIndex, sight['shape'], entry)
     else:
-        entry = me.getValue(offentry)
-        lt.addLast(entry['lstoffenses'], crime)
-    return datentry
+        entry = me.getValue(shapentry)
+        lt.addLast(entry['lstsight'], sight)
+    return date
 
 # Funciones para creacion de datos
 
+def newDataEntry(crime):
+    """
+    Crea una entrada en el indice por fechas, es decir en el arbol
+    binario.
+    """
+    entry = {'shapeIndex': None, 'lstshape': None}
+    entry['shapeIndex'] = mp.newMap(numelements=30,
+                                     maptype='PROBING',
+                                     comparefunction=None)
+    entry['lstshape'] = lt.newList('ARRAY_LIST', compareDates)
+    return entry
+
+
 # Funciones de consulta
+def newSightEntry(sightype, sight):
+    """
+    Crea una entrada en el indice por tipo de crimen, es decir en
+    la tabla de hash, que se encuentra en cada nodo del arbol.
+    """
+    sientry = {'sight': None, 'lstsight': None}
+    sientry['sight'] = sightype
+    sientry['lstsight'] = lt.newList('ARRAY_LIST', None)
+    return sientry
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareDates(date1, date2):
@@ -99,3 +124,14 @@ def compareDates(date1, date2):
         return -1
 
 # Funciones de ordenamiento
+def minKey(catalog):
+    """
+    Llave mas pequena
+    """
+    return om.minKey(catalog['dateIndex'])
+
+def maxKey(catalog):
+    """
+    Llave mas pequena
+    """
+    return om.maxKey(catalog['dateIndex'])

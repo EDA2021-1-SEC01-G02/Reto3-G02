@@ -39,6 +39,9 @@ def loadData(catalog):
                                 delimiter=",")
     for sight in input_file:
         model.addSight(catalog, sight)
+    
+    return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
+
 
 # Funciones para la carga de datos
 
