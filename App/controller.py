@@ -30,6 +30,15 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
+def init():
+    return model.init()
+ 
+def loadData(catalog):
+    file = cf.data_dir + 'UFOS/UFOS-utf8-small.csv'
+    input_file = csv.DictReader(open(file, encoding="utf-8"),
+                                delimiter=",")
+    for sight in input_file:
+        model.addSight(catalog, sight)
 
 # Funciones para la carga de datos
 
