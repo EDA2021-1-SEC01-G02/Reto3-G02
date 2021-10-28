@@ -42,7 +42,7 @@ def printMenu():
 catalog = None
 
 """
-Menu principal
+Menu principal.
 """
 while True:
     printMenu()
