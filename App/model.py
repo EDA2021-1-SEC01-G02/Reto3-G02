@@ -61,8 +61,13 @@ def countCity(catalog, city):
     height = (om.height(map))
     cityMap = onlyMapValue(map, city)
     citySize = 0
-    return size, height
-    
+    lst = om.valueSet(cityMap)
+    for pos in range(1, lt.size(lst)+1):
+        temp = lt.getElement(lst, pos)
+        sizeTemp = om.size(temp)
+        citySize += sizeTemp
+    return size, height, citySize
+
 def addCity(catalog, sight):
     map = catalog['cityIndex']
     city =  sight['city']

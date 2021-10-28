@@ -59,7 +59,8 @@ while True:
     elif int(inputs[0]) == 2:
         ciudad = input("Digite la ciudad a consultar: ")
         resultados = controller.countCity(catalog,ciudad)
-        print('El numero de ciudades (elementos del map) es: %s \n' 'El alto del arbol es de: %s' %(resultados[0], resultados[1]))
+        print('\n''El numero de ciudades (elementos del map) es: %s \n' 'El alto del arbol es de: %s' %(resultados[0], resultados[1]))
+        print('En %s hay %s avistamientos' %(ciudad.capitalize(), resultados[2]))
    
 
 
