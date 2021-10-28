@@ -39,6 +39,8 @@ def loadData(catalog):
                                 delimiter=",")
     for sight in input_file:
         model.addSight(catalog, sight)
+        model.addCity(catalog, sight)
+
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
 
@@ -50,5 +52,6 @@ def loadData(catalog):
 # Funciones de consulta sobre el catálogo
 
 def countCity(catalog,city):
-    resultado = model.citySights(catalog,city)
-    return resultado
+    return model.countCity(catalog, city)
+
+

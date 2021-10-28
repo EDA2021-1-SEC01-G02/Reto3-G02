@@ -37,7 +37,7 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Avistamientos en una ciudad")
     
 catalog = None
 
@@ -51,16 +51,16 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.init()
         to_print = controller.loadData(catalog)
-        print('Numero de elementos: ' + str(to_print[0]))
+        print('Numero de elementos: %s \n' 'Alto del arbbol: %s'  %(to_print[0][0],to_print[0][1]))
         print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
         print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
-        print(catalog["sights"])
+
 
     elif int(inputs[0]) == 2:
         ciudad = input("Digite la ciudad a consultar: ")
         resultados = controller.countCity(catalog,ciudad)
-        print("Total de avistamientos en "+ciudad+": "+str(resultados))
-        print(catalog[ciudad])
+        print('El numero de ciudades (elementos del map) es: %s \n' 'El alto del arbol es de: %s' %(resultados[0], resultados[1]))
+   
 
 
     else:

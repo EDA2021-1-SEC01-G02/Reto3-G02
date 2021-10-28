@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.bst import height
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -39,8 +40,6 @@ los mismos.
 """
 
 # Construccion de modelos
-def sightSize(catalog):
-    return lt.size(catalog['sights'])
 
 def init():
     catalog = {'sights': None,
@@ -50,9 +49,38 @@ def init():
     catalog['sights'] = lt.newList('ARRAY_LIST', None)
     catalog['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
+    catalog['cityIndex'] = om.newMap(omaptype='RBT',
+                                      comparefunction=None)                               
     return catalog
 
 # Funciones para agregar informacion al catalogo
+
+def countCity(catalog, city):
+    map = catalog['cityIndex']
+    size =  (om.size(map))
+    height = (om.height(map))
+    cityMap = onlyMapValue(map, city)
+    citySize = 0
+    return size, height
+    
+def addCity(catalog, sight):
+    map = catalog['cityIndex']
+    city =  sight['city']
+    time = sight['datetime']
+    time =  datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+    if not om.contains(map, city):
+        timeMap = om.newMap(omaptype='RBT',comparefunction=compareDates)
+        om.put(map, city, timeMap)
+    to_add = onlyMapValue(map, city)
+    if not om.contains(to_add, time.date()):  
+        hourmap = om.newMap(omaptype='RBT',
+                                        comparefunction=compareDates)
+        om.put(to_add, time.date(), hourmap)
+    hourMap =  onlyMapValue(to_add, time.date())
+    om.put(hourMap, time.time(), lt.newList('ARRAY_LIST') )
+    final = onlyMapValue(hourMap, time.time())
+    lt.addLast(final, sight )
+
 def addSight(catalog, sight):
     lt.addLast(catalog['sights'], sight)
     updateDateIndex(catalog['dateIndex'], sight)
@@ -69,9 +97,8 @@ def updateDateIndex(catalog, sight):
         datentry = me.getValue(entry)
     addDateIndex(datentry, sight)
     return map
-
 def addDateIndex(date, sight):
-
+    
     lst = date['lstshape']
     lt.addLast(lst, sight)
     dateIndex = date['shapeIndex']
@@ -85,7 +112,15 @@ def addDateIndex(date, sight):
         lt.addLast(entry['lstsight'], sight)
     return date
 
+
+
 # Funciones para creacion de datos
+
+
+def onlyMapValue(map, key):
+    pair = om.get(map, key)
+    value = me.getValue(pair)
+    return value
 
 def newDataEntry(crime):
     """
@@ -111,22 +146,9 @@ def newSightEntry(sightype, sight):
     sientry['lstsight'] = lt.newList('ARRAY_LIST', None)
     return sientry
 
-def citySights(catalog,city):
-     
-    catalog[city] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareDates)
-    sightsCount = 0
+def sightSize(catalog):
+    return lt.size(catalog['sights']), om.height(catalog['dateIndex']),
 
-    for i in range(0,lt.size(catalog["sights"])+1):
-        temp = lt.getElement(catalog["sights"],i)
-        if temp["city"] == city:
-            om.put(catalog[city],temp["datetime"],temp)
-            sightsCount += 1
-
-    
-    
-
-    return (sightsCount)
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
