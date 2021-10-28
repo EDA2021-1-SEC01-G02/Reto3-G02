@@ -41,6 +41,7 @@ los mismos.
 # Construccion de modelos
 def sightSize(catalog):
     return lt.size(catalog['sights'])
+
 def init():
     catalog = {'sights': None,
                 'dateIndex': None
@@ -109,6 +110,23 @@ def newSightEntry(sightype, sight):
     sientry['sight'] = sightype
     sientry['lstsight'] = lt.newList('ARRAY_LIST', None)
     return sientry
+
+def citySights(catalog,city):
+     
+    catalog[city] = om.newMap(omaptype='RBT',
+                                      comparefunction=compareDates)
+    sightsCount = 0
+
+    for i in range(0,lt.size(catalog["sights"])+1):
+        temp = lt.getElement(catalog["sights"],i)
+        if temp["city"] == city:
+            om.put(catalog[city],temp["datetime"],temp)
+            sightsCount += 1
+
+    
+    
+
+    return (sightsCount)
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista

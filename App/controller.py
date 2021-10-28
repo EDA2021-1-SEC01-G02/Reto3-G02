@@ -48,3 +48,7 @@ def loadData(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def countCity(catalog,city):
+    resultado = model.citySights(catalog,city)
+    return resultado

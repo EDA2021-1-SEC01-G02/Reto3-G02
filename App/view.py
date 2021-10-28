@@ -54,9 +54,14 @@ while True:
         print('Numero de elementos: ' + str(to_print[0]))
         print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
         print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
+        print(catalog["sights"])
 
     elif int(inputs[0]) == 2:
-        pass
+        ciudad = input("Digite la ciudad a consultar: ")
+        resultados = controller.countCity(catalog,ciudad)
+        print("Total de avistamientos en "+ciudad+": "+str(resultados))
+        print(catalog[ciudad])
+
 
     else:
         sys.exit(0)
