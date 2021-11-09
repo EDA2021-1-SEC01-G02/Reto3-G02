@@ -43,7 +43,8 @@ los mismos.
 
 def init():
     catalog = {'sights': None,
-                'dateIndex': None
+                'dateIndex': None,
+                "hourIndex": om.newMap(omaptype="RBT",comparefunction=None)
                 }
 
     catalog['sights'] = lt.newList('ARRAY_LIST', None)
@@ -70,9 +71,9 @@ def countCity(catalog, city):
 
 def addCity(catalog, sight):
     map = catalog['cityIndex']
-    city =  sight['city']
+    city = sight['city']
     time = sight['datetime']
-    time =  datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+    time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
     if not om.contains(map, city):
         timeMap = om.newMap(omaptype='RBT',comparefunction=compareDates)
         om.put(map, city, timeMap)
@@ -102,8 +103,8 @@ def updateDateIndex(catalog, sight):
         datentry = me.getValue(entry)
     addDateIndex(datentry, sight)
     return map
+
 def addDateIndex(date, sight):
-    
     lst = date['lstshape']
     lt.addLast(lst, sight)
     dateIndex = date['shapeIndex']
@@ -115,9 +116,12 @@ def addDateIndex(date, sight):
     else:
         entry = me.getValue(shapentry)
         lt.addLast(entry['lstsight'], sight)
+    
     return date
 
-
+#def updateHourIndex(catalog,sight):
+    #ocurredHour = sight["datetime"]
+    
 
 # Funciones para creacion de datos
 
@@ -152,7 +156,54 @@ def newSightEntry(sightype, sight):
     return sientry
 
 def sightSize(catalog):
-    return lt.size(catalog['sights']), om.height(catalog['dateIndex']),
+    return lt.size(catalog['sights']), om.height(catalog['dateIndex'])
+
+def extractByTimeRange(catalog,date1,date2):
+    """
+    Extrae los datos que esten en el rango de las horas.
+    """
+    result = lt.newList() #Lista a almacenar datos
+    dateKeys = om.keySet(catalog) #Llaves para recorrer el mapa
+    for i in range(1,lt.size(dateKeys)+1): #Recorrer
+        date = lt.getElement(dateKeys,i) #Obtener llave
+        node = om.get(catalog,date) #Obtener nodo
+        print(node)
+        nodeDateKeys = om.keySet(node) #Recorrer nodo
+        for j in range(1,lt.getElement(nodeDateKeys)+1):
+            ufoKey = lt.getElement(nodeDateKeys,j)
+            temp = om.get(node,ufoKey)
+            print(temp)
+        print(node)
+    return result
+
+#def extractLatestSightByTime(catalog):
+    #latestSight = 
+    #for i in range():
+
+def extractByDateRange(catalog,dateInf,dateSup):
+    """
+    Extrae los datos que esten en el rango de las fechas.
+    """
+    dateInf = datetime.datetime.strptime(dateInf,"%Y-%m-%d").date()
+    dateSup = datetime.datetime.strptime(dateSup,"%Y-%m-%d").date()
+
+    result = lt.newList()
+    dateKeys = om.keys(catalog,dateInf,dateSup) #Llaves para recorrer el mapa
+    for i in range(1,lt.size(dateKeys)+1): #Recorrer
+        date = lt.getElement(dateKeys,i) #Obtener llave
+        if ((compareDates(date,dateInf)==1) or (compareDates(date,dateInf)==0)) and ((compareDates(date,dateSup)==(-1)) or (compareDates(date,dateInf)==0)): #Verificar si esta en rango
+            node = om.get(catalog,date) #Obtener nodo
+            print(node)
+            dateKeys = mp.keySet(node["value"]) #Llaves para recorrer el mapa
+            print(dateKeys)
+            for j in range(1,lt.size(node)+1):
+                ufo = lt.getElement(node,j)
+                print("LOL")
+                print(ufo)
+
+
+    return result
+
 
 
 

@@ -24,7 +24,6 @@ import config as cf
 import model
 import csv
 
-
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
@@ -41,9 +40,7 @@ def loadData(catalog):
         model.addSight(catalog, sight)
         model.addCity(catalog, sight)
 
-    
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
-
 
 # Funciones para la carga de datos
 
@@ -54,4 +51,13 @@ def loadData(catalog):
 def countCity(catalog,city):
     return model.countCity(catalog, city)
 
+def countPerTime(catalog,fechaInf,fechaSup):
+    temp = model.extractByTimeRange(catalog["dateIndex"],fechaInf,fechaSup)
+    latestSight = model.extractLatestSightByTime(temp)
+    
+    #Numero avistamientos, avistamiento mas tardio
+    return (temp[1],latestSight) 
 
+def countPerDate(catalog,fechaInf,fechaSup):
+    temp = model.extractByDateRange(catalog["dateIndex"],fechaInf,fechaSup)
+    
