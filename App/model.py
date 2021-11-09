@@ -52,20 +52,22 @@ def init():
     catalog['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     catalog['cityIndex'] = om.newMap(omaptype='RBT',
-                                      comparefunction=None)                               
+                                      comparefunction=None)
+    catalog["timeIndex"] = om.newMap(omaptype='RBT',
+                                      comparefunction=None) #TODO Configurar para filtrar por hora                               
     return catalog
 
 # Funciones para agregar informacion al catalogo
 
 def countCity(catalog, city):
-    map = catalog['cityIndex']
-    size =  (om.size(map))
-    height = (om.height(map))
-    cityList = onlyMapValue(map, city)
-    citySize = lt.size(cityList)
-    ms.sort(cityList, sortDate)
-    table = agregarTabla(cityList)
-    return size, height, citySize, table
+    map = catalog['cityIndex'] #Seleccion del mapa de ciudades
+    size =  (om.size(map)) #Tamaño
+    height = (om.height(map)) #Altura
+    cityList = onlyMapValue(map, city) #Accede a los datos
+    citySize = lt.size(cityList) #Tamaño del grupo de datos
+    ms.sort(cityList, sortDate) #Organizar datos de la ciudad segun la fecha
+    table = agregarTabla(cityList) #Obtener los 3 primeros y 3 ultimos
+    return size, height, citySize, table #Tupla de datos
 
 def addCity(catalog, sight):
     map = catalog['cityIndex']
@@ -76,6 +78,57 @@ def addCity(catalog, sight):
         timeList = lt.newList('ARRAY_LIST', None)
         om.put(map, city, timeList)
     to_add = onlyMapValue(map, city)
+    lt.addLast(to_add, sight)
+
+#Req 3
+def countTime(catalog,timeMin,timeMax):
+    timeMin = datetime.datetime.strptime(timeMin,"%H:%M") #Conversion a datetime
+    timeMin = timeMin.time() #Extraccion de hora
+    timeMax = datetime.datetime.strptime(timeMax,"%H:%M")
+    timeMax = timeMax.time()
+
+    result = lt.newList("ARRAY_LIST", None) #Almacenamiento de datos para DataFram
+    latestSight = datetime.datetime.strptime("00:00", "%H:%M") #Almacenamiento del registro mas tardio
+    latestSight = latestSight.time() #Conversion a formato de hora
+    countLatestSight = 0 #Contador de registros con la misma hora
+    map = catalog["timeIndex"] #Selecciona el mapa de horas
+    timeKeys = om.keys(map,timeMin,timeMax) #Llaves de los datos en el rango de tiempo
+
+    for i in range (1,lt.size(timeKeys)+1): #Recorre el mapa
+        timeTemp = lt.getElement(timeKeys,i) #Obtiene una hora
+        timeList = onlyMapValue(map, timeTemp) #Accede a los datos
+        timeListSize = lt.size(timeList)
+        for i in range(1,timeListSize+1):
+            tempData = lt.getElement(timeList,i)
+            lt.addLast(result,tempData) #Añade a los datos del DataFrame
+
+        compare = compareHours(timeTemp,latestSight) #Comparar si es mas tarde que el anterior
+        if compare == 0: #Si son iguales
+            countLatestSight+=1 #Uno mas al contador
+        elif compare == 1: #Si el dato temporal es mas tarde
+            latestSight = timeTemp
+            countLatestSight = 1
+
+    latestTime = {}
+    latestTime["0"] = latestSight,countLatestSight
+    latestDF = pd.DataFrame.from_dict(latestTime, orient='index', columns= ["time","count"])
+
+    print(result)
+    ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: sort de horas
+    differentTimes = om.size(map) #Horas registradas unicas
+    rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
+    table = agregarTabla(result) #Obtener los 3 primeros y 3 ultimos
+    return (differentTimes,latestDF,rangeSize,table) #Tupla de datos
+    
+def addTime(catalog,sight):
+    map = catalog['timeIndex']
+    time = sight['datetime'][11:16]
+    time =  datetime.datetime.strptime(time, '%H:%M')
+    hour = time.time()
+    if not om.contains(map, hour):
+        timeList = lt.newList('ARRAY_LIST', None)
+        om.put(map, hour, timeList)
+    to_add = onlyMapValue(map, hour)
     lt.addLast(to_add, sight)
 
 
@@ -183,6 +236,27 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+
+def compareHours(hour1,hour2):
+    """
+    Compara dos horas
+
+    0: Son iguales
+    1: hour1 es mayor
+    2: hour1 es menor
+    """
+    if (hour1 == hour2):
+        return 0
+    elif (hour1 > hour2):
+        return 1
+    else:
+        return -1
+
+def sortHours(item1,item2):
+    if item1['datetime'] < item2['datetime']:
+        return True
+    else:
+        return False
 
 # Funciones de ordenamiento
 def minKey(catalog):

@@ -40,6 +40,7 @@ def loadData(catalog):
     for sight in input_file:
         model.addSight(catalog, sight)
         model.addCity(catalog, sight)
+        model.addTime(catalog, sight)
 
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
@@ -55,5 +56,8 @@ def flElements(catalog):
 
 def countCity(catalog,city):
     return model.countCity(catalog, city)
+
+def countTime(catalog,timeMin,timeMax):
+    return model.countTime(catalog,timeMin,timeMax)
 
 
