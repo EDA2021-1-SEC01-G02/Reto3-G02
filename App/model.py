@@ -32,6 +32,8 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
+import pandas as pd
 assert cf
 import datetime
 """
@@ -59,14 +61,11 @@ def countCity(catalog, city):
     map = catalog['cityIndex']
     size =  (om.size(map))
     height = (om.height(map))
-    cityMap = onlyMapValue(map, city)
-    citySize = 0
-    lst = om.valueSet(cityMap)
-    for pos in range(1, lt.size(lst)+1):
-        temp = lt.getElement(lst, pos)
-        sizeTemp = om.size(temp)
-        citySize += sizeTemp
-    return size, height, citySize
+    cityList = onlyMapValue(map, city)
+    citySize = lt.size(cityList)
+    ms.sort(cityList, sortDate)
+    table = agregarTabla(cityList)
+    return size, height, citySize, table
 
 def addCity(catalog, sight):
     map = catalog['cityIndex']
@@ -74,17 +73,17 @@ def addCity(catalog, sight):
     time = sight['datetime']
     time =  datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
     if not om.contains(map, city):
-        timeMap = om.newMap(omaptype='RBT',comparefunction=compareDates)
-        om.put(map, city, timeMap)
+        timeList = lt.newList('ARRAY_LIST', None)
+        om.put(map, city, timeList)
     to_add = onlyMapValue(map, city)
-    if not om.contains(to_add, time.date()):  
-        hourmap = om.newMap(omaptype='RBT',
-                                        comparefunction=compareDates)
-        om.put(to_add, time.date(), hourmap)
-    hourMap =  onlyMapValue(to_add, time.date())
-    om.put(hourMap, time.time(), lt.newList('ARRAY_LIST') )
-    final = onlyMapValue(hourMap, time.time())
-    lt.addLast(final, sight )
+    lt.addLast(to_add, sight)
+
+
+def sortDate(item1,item2):
+    if item1['datetime'] < item2['datetime']:
+        return True
+    else:
+        return False
 
 def addSight(catalog, sight):
     lt.addLast(catalog['sights'], sight)
@@ -141,6 +140,23 @@ def newDataEntry(crime):
 
 
 # Funciones de consulta
+def getTen(list):
+    return agregarTabla(list)
+
+
+def agregarTabla(list):
+    artStr = { }
+    size = lt.size(list)
+    for pos in range(1, 6): 
+        temp = lt.getElement(list, pos)
+        artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
+    for pos in range(size-4, size+1): 
+        temp = lt.getElement(list, pos)
+        artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
+    
+    return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', 'city', 'state', 'country', 'shape', 'duration (seconds)', 'date posted', 'latitude', 'longitude']))
+
+
 def newSightEntry(sightype, sight):
     """
     Crea una entrada en el indice por tipo de crimen, es decir en

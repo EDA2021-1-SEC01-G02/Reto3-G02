@@ -44,7 +44,9 @@ def loadData(catalog):
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
 
-
+def flElements(catalog):
+    
+    return model.getTen(catalog)
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento

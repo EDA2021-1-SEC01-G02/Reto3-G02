@@ -54,14 +54,14 @@ while True:
         print('Numero de elementos: %s \n' 'Alto del arbbol: %s'  %(to_print[0][0],to_print[0][1]))
         print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
         print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
-
-
+        print(controller.flElements(catalog['sights']))
     elif int(inputs[0]) == 2:
         ciudad = input("Digite la ciudad a consultar: ")
         resultados = controller.countCity(catalog,ciudad)
         print('\n''El numero de ciudades (elementos del map) es: %s \n' 'El alto del arbol es de: %s' %(resultados[0], resultados[1]))
         print('En %s hay %s avistamientos' %(ciudad.capitalize(), resultados[2]))
-   
+        print(resultados[3])
+
 
 
     else:
