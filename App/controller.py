@@ -42,6 +42,7 @@ def loadData(catalog):
         model.addCity(catalog, sight)
         model.addDuration(catalog, sight)
         model.addTime(catalog, sight)
+        model.addLon(catalog, sight)
 
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
@@ -75,3 +76,9 @@ def countTime(catalog,timeMin,timeMax):
 
 def countDate(catalog,dateMin,dateMax):
     return model.countDate(catalog,dateMin,dateMax)
+
+def getAreaRange(catalog, minLon, maxLon, minLat, maxLat ):
+    firstList = model.getLonRange(catalog, minLon, maxLon)
+    getLatRange =  model.getLatRange(firstList, minLat, maxLat)
+    return model.agregarTabla(getLatRange[0],3), getLatRange[1]
+    

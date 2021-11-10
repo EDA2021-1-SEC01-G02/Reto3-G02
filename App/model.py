@@ -57,10 +57,50 @@ def init():
                                         comparefunction=None)                        
                                      
     catalog["timeIndex"] = om.newMap(omaptype='RBT',
-                                      comparefunction=None) #TODO Configurar para filtrar por hora                               
+                                      comparefunction=None) #TODO Configurar para filtrar por hora   
+    catalog['area'] = om.newMap(omaptype='RBT',
+                                      comparefunction=None)                            
     return catalog
 
 # Funciones para agregar informacion al catalogo
+
+def getLonRange(catalog, min, max):
+    return om.values(catalog['area'], min, max)
+
+def getLatRange(list, minLat, maxLat):
+    size = lt.size(list)
+    newList = lt.newList('ARRAY_LIST', None)
+    for pos in range(1,size+1):
+        temp =lt.getElement(list, pos)
+        tempList = om.values(temp, minLat,maxLat)
+        for ind in range(1, lt.size(tempList)+1):
+            tList = lt.getElement(tempList,ind)
+            for ind2 in range(1, lt.size(tList)+1):
+                to_add = lt.getElement(tList, ind2)
+                lt.addLast(newList, to_add)
+    ms.sort(newList, sortLat)
+    return newList, lt.size(newList)
+
+def sortLat(item1, item2):
+    if item1['latitude'] < item2['latitude']:
+        return True
+    else:
+        return False
+
+def addLon(catalog, sight):
+    map = catalog['area']
+    long =  round(float(sight['longitude']),2)
+    lat =  round(float(sight['latitude']),2)
+    if not om.contains(map, long):
+        latMap = om.newMap(omaptype='RBT',
+                                      comparefunction=None)  
+        om.put(map, long, latMap)
+    to_add = onlyMapValue(map, long)
+    lst = lt.newList('ARRAY_LIST', None)
+    if not om.contains(to_add, lat):
+        om.put(to_add,lat,lst )
+    latList = onlyMapValue(to_add, lat)
+    lt.addLast(latList, sight)
 
 def countCity(catalog, city):
     map = catalog['cityIndex'] #Seleccion del mapa de ciudades

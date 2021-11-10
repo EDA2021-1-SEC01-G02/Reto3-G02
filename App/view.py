@@ -110,6 +110,20 @@ while True:
         print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],horaInf,horaSup))
         print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
         print(resultado[3])
+    
+    elif int(inputs[0]) == 6:
+        minLon =  -109.05#float(input())
+        maxLon = -103.0#float(input())
+        minLat = 31.33#float(input())
+        maxLat = 37.0#float(input())
+        result = (controller.getAreaRange(catalog, minLon, maxLon, minLat, maxLat ))
+        print('Avistamientos de OVNIS en una longitud entre el rango de %s y %s'%(minLon, maxLon))
+        print('y en una latitud entre el rango de %s y %s' %(minLat, maxLat))
+        print('Hay %s avistamientos diferentes en el area.'%(result[1]))
+        print(result[0])
+
+        pass
+        
 
     else:
         sys.exit(0)
