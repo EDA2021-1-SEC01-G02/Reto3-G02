@@ -55,11 +55,11 @@ def init():
                                       comparefunction=None)       
     catalog['duration'] = om.newMap(omaptype='RBT',
                                         comparefunction=None)                        
-                                     
     catalog["timeIndex"] = om.newMap(omaptype='RBT',
-                                      comparefunction=None) #TODO Configurar para filtrar por hora   
+                                      comparefunction=compareHours) #TODO Configurar para filtrar por hora   
     catalog['area'] = om.newMap(omaptype='RBT',
                                       comparefunction=None)                            
+
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -140,9 +140,6 @@ def countTime(catalog,timeMin,timeMax):
     timeMax = timeMax.time()
 
     result = lt.newList("ARRAY_LIST", None) #Almacenamiento de datos para DataFram
-    latestSight = datetime.datetime.strptime("00:00", "%H:%M") #Almacenamiento del registro mas tardio
-    latestSight = latestSight.time() #Conversion a formato de hora
-    countLatestSight = 0 #Contador de registros con la misma hora
     map = catalog["timeIndex"] #Selecciona el mapa de horas
     timeKeys = om.keys(map,timeMin,timeMax) #Llaves de los datos en el rango de tiempo
 
@@ -154,22 +151,19 @@ def countTime(catalog,timeMin,timeMax):
             tempData = lt.getElement(timeList,j)
             lt.addLast(result,tempData) #Añade a los datos del DataFrame
 
-        compare = compareHours(timeTemp,latestSight) #Comparar si es mas tarde que el anterior
-        if compare == 0: #Si son iguales
-            countLatestSight+=1 #Uno mas al contador
-        elif compare == 1: #Si el dato temporal es mas tarde
-            latestSight = timeTemp
-            countLatestSight = 1
+
+    latestSight = om.maxKey(map) #Llave del registro mas tardio en el mapa
+    countLatestSight = lt.size(onlyMapValue(map,latestSight)) #Numero de registros
 
     latestTime = {}
     latestTime["0"] = latestSight,countLatestSight
     latestDF = pd.DataFrame.from_dict(latestTime, orient='index', columns= ["time","count"])
 
     print(result)
-    ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: Arreglar sort
+    #ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: Arreglar sort
     differentTimes = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
-    table = agregarTabla(result) #Obtener los 3 primeros y 3 ultimos
+    table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
     return (differentTimes,latestDF,rangeSize,table) #Tupla de datos
     
 def addTime(catalog,sight):
@@ -196,32 +190,28 @@ def countDate (catalog,dateMin,dateMax):
     countLatestSight = 0 #Contador de registros con la misma fecha
     map = catalog["dateIndex"] #Selecciona el mapa de fechas
     dateKeys = om.keys(map,dateMin,dateMax) #Llaves de los datos en el rango de fechas
+    
 
     for i in range (1,lt.size(dateKeys)+1): #Recorre el mapa
         dateTemp = lt.getElement(dateKeys,i) #Obtiene una fecha
         dateList = onlyMapValue(map, dateTemp) #Accede a los datos
         print(dateList)
-        dateListSize = om.size(dateList) #Obtiene el numero de registros
+        dateListSize = lt.size(dateList) #Obtiene el numero de registros
         for j in range(1,dateListSize+1):
             tempData = lt.getElement(dateList,j) #Obtiene un registro
             lt.addLast(result,tempData) #Añade a los datos del DataFrame
 
-        compare = compareHours(dateTemp,latestSight) #Comparar si es mas tarde que el anterior
-        if compare == 0: #Si son iguales
-            countLatestSight+=1 #Uno mas al contador
-        elif compare == -1: #Si el dato temporal es mas antiguo
-            latestSight = dateTemp
-            countLatestSight = 1
+    latestSight = om.minKey(map)
+    countLatestSight = lt.size(onlyMapValue(map,latestSight))
 
     latestDate = {}
     latestDate["0"] = latestSight,countLatestSight
     latestDF = pd.DataFrame.from_dict(latestDate, orient='index', columns= ["date","count"])
 
     print(result)
-    ms.sort(result, sortOnlyDates) #Organizar datos del rango segun la hora #TODO: sort de horas
     differentDates = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
-    table = agregarTabla(result) #Obtener los 3 primeros y 3 ultimos
+    table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
     return (differentDates,latestDF,rangeSize,table) #Tupla de datos
 
 
@@ -317,14 +307,23 @@ def getTen(list):
 def agregarTabla(list,len):
     artStr = { }
     size = lt.size(list)
-    for pos in range(1, len+1): 
-        temp = lt.getElement(list, pos)
-        artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
-    for pos in range(size-len+1, size+1): 
-        temp = lt.getElement(list, pos)
-        artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
-    
-    return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', 'city', 'state', 'country', 'shape', 'duration (seconds)', 'date posted', 'latitude', 'longitude']))
+    if len == 5:
+        for pos in range(1, len+1): 
+            temp = lt.getElement(list, pos)
+            artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
+        for pos in range(size-len+1, size+1): 
+            temp = lt.getElement(list, pos)
+            artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
+        return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', 'city', 'state', 'country', 'shape', 'duration (seconds)', 'date posted', 'latitude', 'longitude']))
+    else:
+        for pos in range(1, len+1): 
+            temp = lt.getElement(list, pos)
+            artStr[pos] = temp['datetime'],temp["datetime"][:11],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)']
+        for pos in range(size-len+1, size+1): 
+            temp = lt.getElement(list, pos)
+            artStr[pos] = temp['datetime'],temp['datetime'][:11],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'] 
+        return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', "date", 'city', 'state', 'country', 'shape', 'duration (seconds)']))
+
 
 
 def newSightEntry(sightype, sight):
@@ -370,12 +369,15 @@ def compareHours(hour1,hour2):
         return -1
 
 def sortHours(item1,item2):
-    if item1['datetime'] < item2['datetime']:
+    if item1['datetime'].time() < item2['datetime'].time():
         return True
     else:
         return False
 
 def sortOnlyDates(item1,item2):
+    print(item1)
+    print("-")
+    print(item2)
     if item1['datetime'].date() < item2['datetime'].date():
         return True
     else:

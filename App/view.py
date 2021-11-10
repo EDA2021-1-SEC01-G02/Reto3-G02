@@ -107,7 +107,7 @@ while True:
         print("Hay %s fechas unicas en los registros..." %(resultado[0]))
         print("El registro con la fecha mas antigua es:")
         print(resultado[1])
-        print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],horaInf,horaSup))
+        print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],fechaInf,fechaSup))
         print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
         print(resultado[3])
     
