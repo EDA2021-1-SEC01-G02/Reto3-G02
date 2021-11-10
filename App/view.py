@@ -38,6 +38,10 @@ def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
     print("2- Avistamientos en una ciudad")
+    print("3- Contar los avistamientos por duración")
+    print("4- Contar avistamientos por Hora/Minutos del día")
+    print("5- Contar los avistamientos en un rango de fechas")
+    print("6- Contar los avistamientos de una Zona Geográfica")
     
 catalog = None
 
@@ -51,10 +55,11 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = controller.init()
         to_print = controller.loadData(catalog)
-        print('Numero de elementos: %s \n' 'Alto del arbbol: %s'  %(to_print[0][0],to_print[0][1]))
+        print('Numero de elementos: %s \n' 'Alto del arbol: %s'  %(to_print[0][0],to_print[0][1]))
         print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
         print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
         print(controller.flElements(catalog['sights']))
+
     elif int(inputs[0]) == 2:
         ciudad = input("Digite la ciudad a consultar: ")
         resultados = controller.countCity(catalog,ciudad)
@@ -72,10 +77,24 @@ while True:
         print('Duration (seconds): %s. ' %(sights[0]))
         print('Count: %s' %(sights[2]))
         print('Hay %s avistamientos que duraron entre %s y %s' %(range[1], min, max))
-        print('Los tres primero y los tres ')
+        print('Los tres primero y los tres ultimos avistamientos del rango son:')
         print(range[0])
         pass
 
+    #Requerimiento 3
+    elif int(inputs[0]) == 4: #TODO: Terminar funcion y permitir que pregunte valores al usuario
+        print("Recuerde que usted debe digitar el tiempo en el formato de HH:MM ")
+        #fechaInf = input("Ingrese el limite inferior: ")
+        horaInf = "20:45"
+        #fechaSup = input("Ingrese el limite superior: ")
+        horaSup = "23:15"
+        resultado = controller.countTime(catalog,horaInf,horaSup)
+        print("Hay %s horas unicas en los registros..." %(resultado[0]))
+        print("El registro con la hora mas tarde es:")
+        print(resultado[1])
+        print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],horaInf,horaSup))
+        print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
+        print(resultado[3])
 
     else:
         sys.exit(0)

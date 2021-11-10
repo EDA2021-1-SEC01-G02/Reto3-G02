@@ -41,6 +41,8 @@ def loadData(catalog):
         model.addSight(catalog, sight)
         model.addCity(catalog, sight)
         model.addDuration(catalog, sight)
+        model.addTime(catalog, sight)
+
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
 
@@ -57,7 +59,7 @@ def maxDuration(catalog):
     values = model.mapSize(durMap)
     maxValue =  model.maxMap(durMap)
     lst = model.onlyMapValue(durMap, maxValue)
-    return maxValue, values, model.getData(lst)
+    return maxValue, values, model.getData(lst) 
     
 def getDurRange(catalog, min, max):
     lists = model.getDurRange(catalog['duration'], min, max)
@@ -67,5 +69,8 @@ def getDurRange(catalog, min, max):
 
 def countCity(catalog,city):
     return model.countCity(catalog, city)
+
+def countTime(catalog,timeMin,timeMax):
+    return model.countTime(catalog,timeMin,timeMax)
 
 
