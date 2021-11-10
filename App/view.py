@@ -96,6 +96,21 @@ while True:
         print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
         print(resultado[3])
 
+    #Requerimiento 4
+    elif int(inputs[0]) == 5: #TODO: Terminar funcion y permitir que pregunte valores al usuario
+        print("Recuerde que usted debe digitar la fecha en el formato de AAAA-MM-DD")
+        #fechaInf = input("Ingrese el limite inferior: ")
+        fechaInf = "1945-08-06"
+        #fechaSup = input("Ingrese el limite superior: ")
+        fechaSup = "1984-11-15"
+        resultado = controller.countDate(catalog,fechaInf,fechaSup)
+        print("Hay %s fechas unicas en los registros..." %(resultado[0]))
+        print("El registro con la fecha mas antigua es:")
+        print(resultado[1])
+        print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],horaInf,horaSup))
+        print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
+        print(resultado[3])
+
     else:
         sys.exit(0)
 sys.exit(0)

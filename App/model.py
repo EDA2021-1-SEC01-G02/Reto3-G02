@@ -110,8 +110,8 @@ def countTime(catalog,timeMin,timeMax):
         timeTemp = lt.getElement(timeKeys,i) #Obtiene una hora
         timeList = onlyMapValue(map, timeTemp) #Accede a los datos
         timeListSize = lt.size(timeList)
-        for i in range(1,timeListSize+1):
-            tempData = lt.getElement(timeList,i)
+        for j in range(1,timeListSize+1):
+            tempData = lt.getElement(timeList,j)
             lt.addLast(result,tempData) #Añade a los datos del DataFrame
 
         compare = compareHours(timeTemp,latestSight) #Comparar si es mas tarde que el anterior
@@ -126,7 +126,7 @@ def countTime(catalog,timeMin,timeMax):
     latestDF = pd.DataFrame.from_dict(latestTime, orient='index', columns= ["time","count"])
 
     print(result)
-    ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: sort de horas
+    ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: Arreglar sort
     differentTimes = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
     table = agregarTabla(result) #Obtener los 3 primeros y 3 ultimos
@@ -142,6 +142,47 @@ def addTime(catalog,sight):
         om.put(map, hour, timeList)
     to_add = onlyMapValue(map, hour)
     lt.addLast(to_add, sight)
+
+#Req4
+def countDate (catalog,dateMin,dateMax):
+    dateMin = datetime.datetime.strptime(dateMin,"%Y-%m-%d") #Conversion a datetime
+    dateMin = dateMin.date() #Extraccion de fecha
+    dateMax = datetime.datetime.strptime(dateMax,"%Y-%m-%d")
+    dateMax = dateMax.date()
+
+    result = lt.newList("ARRAY_LIST", None) #Almacenamiento de datos para DataFrame
+    latestSight = datetime.datetime.now() #Almacenamiento del registro mas antiguo
+    latestSight = latestSight.time() #Conversion a formato de fecha
+    countLatestSight = 0 #Contador de registros con la misma fecha
+    map = catalog["dateIndex"] #Selecciona el mapa de fechas
+    dateKeys = om.keys(map,dateMin,dateMax) #Llaves de los datos en el rango de fechas
+
+    for i in range (1,lt.size(dateKeys)+1): #Recorre el mapa
+        dateTemp = lt.getElement(dateKeys,i) #Obtiene una fecha
+        dateList = onlyMapValue(map, dateTemp) #Accede a los datos
+        print(dateList)
+        dateListSize = om.size(dateList) #Obtiene el numero de registros
+        for j in range(1,dateListSize+1):
+            tempData = lt.getElement(dateList,j) #Obtiene un registro
+            lt.addLast(result,tempData) #Añade a los datos del DataFrame
+
+        compare = compareHours(dateTemp,latestSight) #Comparar si es mas tarde que el anterior
+        if compare == 0: #Si son iguales
+            countLatestSight+=1 #Uno mas al contador
+        elif compare == -1: #Si el dato temporal es mas antiguo
+            latestSight = dateTemp
+            countLatestSight = 1
+
+    latestDate = {}
+    latestDate["0"] = latestSight,countLatestSight
+    latestDF = pd.DataFrame.from_dict(latestDate, orient='index', columns= ["date","count"])
+
+    print(result)
+    ms.sort(result, sortOnlyDates) #Organizar datos del rango segun la hora #TODO: sort de horas
+    differentDates = om.size(map) #Horas registradas unicas
+    rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
+    table = agregarTabla(result) #Obtener los 3 primeros y 3 ultimos
+    return (differentDates,latestDF,rangeSize,table) #Tupla de datos
 
 
 def sortDate(item1,item2):
@@ -159,9 +200,9 @@ def addSight(catalog, sight):
     return catalog
 
 def updateDateIndex(catalog, sight):
-    occurreddate = sight['datetime']
-    sightDate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S')
-    entry = om.get(catalog, sightDate.date())
+    occurreddate = sight['datetime'] #Obtiene la fecha del avistamiento
+    sightDate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') #Convierte en formato de fecha y hora
+    entry = om.get(catalog, sightDate.date()) #Obtiene el mapa de la fecha
     if entry is None:
         datentry = newDataEntry(sight)
         om.put(catalog, sightDate.date(), datentry)
@@ -169,8 +210,8 @@ def updateDateIndex(catalog, sight):
         datentry = me.getValue(entry)
     addDateIndex(datentry, sight)
     return map
+
 def addDateIndex(date, sight):
-    
     lst = date['lstshape']
     lt.addLast(lst, sight)
     dateIndex = date['shapeIndex']
@@ -291,7 +332,7 @@ def compareHours(hour1,hour2):
 
     0: Son iguales
     1: hour1 es mayor
-    2: hour1 es menor
+    -1: hour1 es menor
     """
     if (hour1 == hour2):
         return 0
@@ -302,6 +343,12 @@ def compareHours(hour1,hour2):
 
 def sortHours(item1,item2):
     if item1['datetime'] < item2['datetime']:
+        return True
+    else:
+        return False
+
+def sortOnlyDates(item1,item2):
+    if item1['datetime'].date() < item2['datetime'].date():
         return True
     else:
         return False

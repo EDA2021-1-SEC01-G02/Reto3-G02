@@ -73,4 +73,5 @@ def countCity(catalog,city):
 def countTime(catalog,timeMin,timeMax):
     return model.countTime(catalog,timeMin,timeMax)
 
-
+def countDate(catalog,dateMin,dateMax):
+    return model.countDate(catalog,dateMin,dateMax)
