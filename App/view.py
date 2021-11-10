@@ -82,11 +82,11 @@ while True:
         pass
 
     #Requerimiento 3
-    elif int(inputs[0]) == 4: #TODO: Terminar funcion y permitir que pregunte valores al usuario
+    elif int(inputs[0]) == 4: #TODO: Usar valores que el usuario escriba
         print("Recuerde que usted debe digitar el tiempo en el formato de HH:MM ")
-        #fechaInf = input("Ingrese el limite inferior: ")
+        fechaInf = input("Ingrese el limite inferior: ")
         horaInf = "20:45"
-        #fechaSup = input("Ingrese el limite superior: ")
+        fechaSup = input("Ingrese el limite superior: ")
         horaSup = "23:15"
         resultado = controller.countTime(catalog,horaInf,horaSup)
         print("Hay %s horas unicas en los registros..." %(resultado[0]))
@@ -97,11 +97,11 @@ while True:
         print(resultado[3])
 
     #Requerimiento 4
-    elif int(inputs[0]) == 5: #TODO: Terminar funcion y permitir que pregunte valores al usuario
+    elif int(inputs[0]) == 5: #TODO: Usar valores que el usuario escriba
         print("Recuerde que usted debe digitar la fecha en el formato de AAAA-MM-DD")
-        #fechaInf = input("Ingrese el limite inferior: ")
+        fechaInf = input("Ingrese el limite inferior: ")
         fechaInf = "1945-08-06"
-        #fechaSup = input("Ingrese el limite superior: ")
+        fechaSup = input("Ingrese el limite superior: ")
         fechaSup = "1984-11-15"
         resultado = controller.countDate(catalog,fechaInf,fechaSup)
         print("Hay %s fechas unicas en los registros..." %(resultado[0]))

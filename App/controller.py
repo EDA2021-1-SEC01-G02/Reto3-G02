@@ -23,6 +23,11 @@
 import config as cf
 import model
 import csv
+import time 
+#Iniciar: start_time = time.process_time()
+
+#Terminar: stop_time = time.process_time()
+#          print((stop_time - start_time)*1000)
 
 
 """

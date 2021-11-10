@@ -139,7 +139,7 @@ def countTime(catalog,timeMin,timeMax):
     timeMax = datetime.datetime.strptime(timeMax,"%H:%M")
     timeMax = timeMax.time()
 
-    result = lt.newList("ARRAY_LIST", None) #Almacenamiento de datos para DataFram
+    result = lt.newList("ARRAY_LIST", sortHours) #Almacenamiento de datos para DataFram
     map = catalog["timeIndex"] #Selecciona el mapa de horas
     timeKeys = om.keys(map,timeMin,timeMax) #Llaves de los datos en el rango de tiempo
 
@@ -159,8 +159,8 @@ def countTime(catalog,timeMin,timeMax):
     latestTime["0"] = latestSight,countLatestSight
     latestDF = pd.DataFrame.from_dict(latestTime, orient='index', columns= ["time","count"])
 
+    ms.sort(result,sortHours)
     print(result)
-    #ms.sort(result, sortHours) #Organizar datos del rango segun la hora #TODO: Arreglar sort
     differentTimes = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
     table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
@@ -191,24 +191,21 @@ def countDate (catalog,dateMin,dateMax):
     map = catalog["dateIndex"] #Selecciona el mapa de fechas
     dateKeys = om.keys(map,dateMin,dateMax) #Llaves de los datos en el rango de fechas
     
-
     for i in range (1,lt.size(dateKeys)+1): #Recorre el mapa
         dateTemp = lt.getElement(dateKeys,i) #Obtiene una fecha
         dateList = onlyMapValue(map, dateTemp) #Accede a los datos
-        print(dateList)
         dateListSize = lt.size(dateList) #Obtiene el numero de registros
-        for j in range(1,dateListSize+1):
+        for j in range(1,dateListSize+1): #Recorrer registros
             tempData = lt.getElement(dateList,j) #Obtiene un registro
             lt.addLast(result,tempData) #Añade a los datos del DataFrame
 
-    latestSight = om.minKey(map)
-    countLatestSight = lt.size(onlyMapValue(map,latestSight))
+    latestSight = om.minKey(map) #Obtiene la fecha mas antigua
+    countLatestSight = lt.size(onlyMapValue(map,latestSight)) #Obtiene el numero de registros con esa fecha
 
-    latestDate = {}
-    latestDate["0"] = latestSight,countLatestSight
-    latestDF = pd.DataFrame.from_dict(latestDate, orient='index', columns= ["date","count"])
+    latestDate = {} #Diccionario para DataFrame
+    latestDate["0"] = latestSight,countLatestSight #Almacenamiento de datos
+    latestDF = pd.DataFrame.from_dict(latestDate, orient='index', columns= ["date","count"]) #Creacion del DataFrame
 
-    print(result)
     differentDates = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
     table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
@@ -318,10 +315,10 @@ def agregarTabla(list,len):
     else:
         for pos in range(1, len+1): 
             temp = lt.getElement(list, pos)
-            artStr[pos] = temp['datetime'],temp["datetime"][:11],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)']
+            artStr[pos] = temp['datetime'],temp["datetime"][:10],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)']
         for pos in range(size-len+1, size+1): 
             temp = lt.getElement(list, pos)
-            artStr[pos] = temp['datetime'],temp['datetime'][:11],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'] 
+            artStr[pos] = temp['datetime'],temp['datetime'][:10],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'] 
         return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', "date", 'city', 'state', 'country', 'shape', 'duration (seconds)']))
 
 
@@ -344,7 +341,12 @@ def sightSize(catalog):
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareDates(date1, date2):
     """
+    Req4
     Compara dos fechas
+
+    0: Son iguales
+    1: date1 es mayor
+    -1: date1 es menor
     """
     if (date1 == date2):
         return 0
@@ -355,6 +357,7 @@ def compareDates(date1, date2):
 
 def compareHours(hour1,hour2):
     """
+    Req 3
     Compara dos horas
 
     0: Son iguales
@@ -369,19 +372,29 @@ def compareHours(hour1,hour2):
         return -1
 
 def sortHours(item1,item2):
-    if item1['datetime'].time() < item2['datetime'].time():
-        return True
-    else:
-        return False
+    """
+    Req3
+    Si las horas son las mismas, comparara por fecha
+    """
+    tempItem1 = datetime.datetime.strptime(item1["datetime"], '%Y-%m-%d %H:%M:%S')
+    hourItem1 = tempItem1.time()
+    tempItem2 = datetime.datetime.strptime(item2["datetime"], '%Y-%m-%d %H:%M:%S')
+    hourItem2 = tempItem2.time()
 
-def sortOnlyDates(item1,item2):
-    print(item1)
-    print("-")
-    print(item2)
-    if item1['datetime'].date() < item2['datetime'].date():
-        return True
+    if hourItem1 == hourItem2:
+        dateItem1 = tempItem1.date()
+        dateItem2 = tempItem2.date()
+
+        if dateItem1 < dateItem2:
+            return True
+        else:
+            return False
+
     else:
-        return False
+        if hourItem1 < hourItem2:
+            return True
+        else:
+            return False
 
 # Funciones de ordenamiento
 def minKey(catalog):
