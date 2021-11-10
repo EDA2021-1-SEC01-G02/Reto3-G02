@@ -42,6 +42,7 @@ def printMenu():
     print("4- Contar avistamientos por Hora/Minutos del día")
     print("5- Contar los avistamientos en un rango de fechas")
     print("6- Contar los avistamientos de una Zona Geográfica")
+    print("7- Visualizar los avistamientos de una Zona Geográfica")
     
 catalog = None
 
@@ -123,6 +124,21 @@ while True:
         print(result[0])
 
         pass
+
+    elif int(inputs[0]) == 7:
+        #minLon = float(input('Digite la longitud minima del rango: '))
+        #maxLon = float(input('Digite la longitud maxima del rango: '))
+        #minLat = float(input('Digite la latitud minima del rango: '))
+        #maxLat = float(input('Digite la latitud maxima del rango: '))
+
+        minLon = -109.05
+        maxLon = -103.00
+        minLat = 31.33
+        maxLat = 37.00
+
+        controller.showAreaRange(catalog,minLon,maxLon,minLat,maxLat)
+        print("Revisar el archivo index.html que se ha creado o actualizado en la raiz del repositorio.")
+
         
 
     else:

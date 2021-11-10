@@ -85,5 +85,10 @@ def countDate(catalog,dateMin,dateMax):
 def getAreaRange(catalog, minLon, maxLon, minLat, maxLat ):
     firstList = model.getLonRange(catalog, minLon, maxLon)
     getLatRange =  model.getLatRange(firstList, minLat, maxLat)
-    return model.agregarTabla(getLatRange[0],3), getLatRange[1]
+    return model.agregarTabla(getLatRange[0],5), getLatRange[1]
+    
+def showAreaRange(catalog, minLon, maxLon, minLat, maxLat):
+    firstList = model.getLonRange(catalog, minLon, maxLon)
+    getLatRange =  model.getLatRange(firstList, minLat, maxLat)
+    model.mapSights(getLatRange[0],getLatRange[1],minLon,minLat,maxLon,maxLat)
     

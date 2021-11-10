@@ -36,6 +36,7 @@ from DISClib.Algorithms.Sorting import mergesort as ms
 import pandas as pd
 assert cf
 import datetime
+import folium
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
@@ -210,6 +211,36 @@ def countDate (catalog,dateMin,dateMax):
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
     table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
     return (differentDates,latestDF,rangeSize,table) #Tupla de datos
+
+#Req6
+def mapSights(sights,sightsNum,minLon,minLat,maxLon,maxLat):
+    mapSight = folium.Map(location=[minLat,minLon],zoom_start=3) #Creacion del mapa
+    for i in range (1,sightsNum+1): #Recorrer registros
+        sight = lt.getElement(sights,i) #Obtener un registro
+        strInfo = """<table class="default"> 
+        <tr>
+        <th>City</th>
+        <th>Datetime</th>
+        <th>Duration[s]</th>
+        <th>Shape</th>
+        <th>Comments</th>
+        </tr>
+        <tr>
+        <td>""",sight["city"],"""</td>
+        <td>""",sight["datetime"],"""</td>
+        <td>""",sight["duration (seconds)"],"""</td>
+        <td>""",sight["shape"],"""</td>
+        <td>""",sight["comments"],"""</td>
+        </tr>
+        </table>
+        """ #Creacion de los datos en tabla tipo HTML
+        folium.Marker([sight["latitude"],sight["longitude"]], popup=strInfo).add_to(mapSight) #Añadir ubicacion
+
+    highlightedArea = folium.GeoJson(
+        data={"type":"Polygon","coordinates":[[[minLat,minLon], [maxLat,minLon], [maxLat,maxLon], [minLon,maxLon]]]})
+    highlightedArea.add_to(mapSight)
+
+    mapSight.save("index.html") #Guardado del mapa
 
 
 def sortDate(item1,item2):
