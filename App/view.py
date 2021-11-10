@@ -112,10 +112,10 @@ while True:
         print(resultado[3])
     
     elif int(inputs[0]) == 6:
-        minLon =  -109.05#float(input())
-        maxLon = -103.0#float(input())
-        minLat = 31.33#float(input())
-        maxLat = 37.0#float(input())
+        minLon =  float(input('Digite la longitud minima del rango: '))
+        maxLon = float(input('Digite la longitud maxima del rango: '))
+        minLat = float(input('Digite la latitud minima del rango: '))
+        maxLat = float(input('Digite la latitud maxima del rango: '))
         result = (controller.getAreaRange(catalog, minLon, maxLon, minLat, maxLat ))
         print('Avistamientos de OVNIS en una longitud entre el rango de %s y %s'%(minLon, maxLon))
         print('y en una latitud entre el rango de %s y %s' %(minLat, maxLat))
