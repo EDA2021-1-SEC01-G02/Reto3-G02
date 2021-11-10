@@ -204,12 +204,11 @@ def updateDateIndex(catalog, sight):
     sightDate = datetime.datetime.strptime(occurreddate, '%Y-%m-%d %H:%M:%S') #Convierte en formato de fecha y hora
     entry = om.get(catalog, sightDate.date()) #Obtiene el mapa de la fecha
     if entry is None:
-        datentry = newDataEntry(sight)
+        datentry = lt.newList('ARRAY_LIST', None)
         om.put(catalog, sightDate.date(), datentry)
-    else:
-        datentry = me.getValue(entry)
-    addDateIndex(datentry, sight)
-    return map
+    temp = onlyMapValue(catalog, sightDate.date())
+    lt.addLast(temp, sight)
+    
 
 def addDateIndex(date, sight):
     lst = date['lstshape']
@@ -268,17 +267,6 @@ def onlyMapValue(map, key):
     value = me.getValue(pair)
     return value
 
-def newDataEntry(crime):
-    """
-    Crea una entrada en el indice por fechas, es decir en el arbol
-    binario.
-    """
-    entry = {'shapeIndex': None, 'lstshape': None}
-    entry['shapeIndex'] = mp.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     comparefunction=None)
-    entry['lstshape'] = lt.newList('ARRAY_LIST', compareDates)
-    return entry
 
 
 # Funciones de consulta
