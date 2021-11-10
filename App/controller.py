@@ -40,7 +40,7 @@ def loadData(catalog):
     for sight in input_file:
         model.addSight(catalog, sight)
         model.addCity(catalog, sight)
-
+        model.addDuration(catalog, sight)
     
     return (model.sightSize(catalog)),(model.minKey(catalog)), (model.maxKey(catalog))
 
@@ -52,6 +52,18 @@ def flElements(catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def maxDuration(catalog):
+    durMap = catalog['duration']
+    values = model.mapSize(durMap)
+    maxValue =  model.maxMap(durMap)
+    lst = model.onlyMapValue(durMap, maxValue)
+    return maxValue, values, model.getData(lst)
+    
+def getDurRange(catalog, min, max):
+    lists = model.getDurRange(catalog['duration'], min, max)
+    getItems = model.getAllItems(lists)
+
+    return model.agregarTabla(getItems[0],3), getItems[1]
 
 def countCity(catalog,city):
     return model.countCity(catalog, city)

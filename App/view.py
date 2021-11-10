@@ -62,6 +62,19 @@ while True:
         print('En %s hay %s avistamientos' %(ciudad.capitalize(), resultados[2]))
         print(resultados[3])
 
+    elif int(inputs[0]) == 3:
+        sights = controller.maxDuration(catalog)
+        min = float(input('Ingrese el valor minimo del rango: '))
+        max = float(input('Ingrese el valor maximo del rango: '))
+        range = controller.getDurRange(catalog, min, max)
+        print('Hay %s diferentes duraciones de avistamiendo de OVNIS.' %(sights[1]))
+        print('La mayor duracion de un avistamiento es:')
+        print('Duration (seconds): %s. ' %(sights[0]))
+        print('Count: %s' %(sights[2]))
+        print('Hay %s avistamientos que duraron entre %s y %s' %(range[1], min, max))
+        print('Los tres primero y los tres ')
+        print(range[0])
+        pass
 
 
     else:

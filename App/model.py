@@ -52,7 +52,9 @@ def init():
     catalog['dateIndex'] = om.newMap(omaptype='RBT',
                                       comparefunction=compareDates)
     catalog['cityIndex'] = om.newMap(omaptype='RBT',
-                                      comparefunction=None)                               
+                                      comparefunction=None)       
+    catalog['duration'] = om.newMap(omaptype='RBT',
+                                        comparefunction=None)                        
     return catalog
 
 # Funciones para agregar informacion al catalogo
@@ -64,8 +66,17 @@ def countCity(catalog, city):
     cityList = onlyMapValue(map, city)
     citySize = lt.size(cityList)
     ms.sort(cityList, sortDate)
-    table = agregarTabla(cityList)
+    table = agregarTabla(cityList,3)
     return size, height, citySize, table
+
+def addDuration(catalog, sight):
+    map = catalog['duration']
+    duration =  float(sight['duration (seconds)'])
+    if not om.contains(map, duration):
+        timeList = lt.newList('ARRAY_LIST', None)
+        om.put(map, duration, timeList)
+    to_add = onlyMapValue(map, duration)
+    lt.addLast(to_add, sight)
 
 def addCity(catalog, sight):
     map = catalog['cityIndex']
@@ -84,6 +95,9 @@ def sortDate(item1,item2):
         return True
     else:
         return False
+
+def mapSize(map):
+    return om.size(map)
 
 def addSight(catalog, sight):
     lt.addLast(catalog['sights'], sight)
@@ -120,6 +134,39 @@ def addDateIndex(date, sight):
 
 # Funciones para creacion de datos
 
+def getData(lst):
+    return  lt.size(lst)
+
+def getDurRange(map, min, max):
+    return om.values(map, min, max)
+    
+
+def getAllItems(lst):
+    newList = lt.newList('ARRAY_LIST', None)
+    size = lt.size(lst)
+    for pos in range(1,size+1):
+        item =  lt.getElement(lst, pos)
+        for sec in range(1, lt.size(item)+1):
+            temp = lt.getElement(item,sec)
+            lt.addLast(newList,temp)
+
+    ms.sort(newList, compDur)
+    return newList, lt.size(newList)
+
+def compDur(dur1, dur2):
+    """
+    Compara dos fechas
+    """
+    if (float(dur1['duration (seconds)']) < float(dur2['duration (seconds)'] )):
+        return True
+    else:
+        return False
+
+
+def maxMap(map):
+
+    return om.maxKey(map)
+    
 
 def onlyMapValue(map, key):
     pair = om.get(map, key)
@@ -141,16 +188,16 @@ def newDataEntry(crime):
 
 # Funciones de consulta
 def getTen(list):
-    return agregarTabla(list)
+    return agregarTabla(list,5)
 
 
-def agregarTabla(list):
+def agregarTabla(list,len):
     artStr = { }
     size = lt.size(list)
-    for pos in range(1, 6): 
+    for pos in range(1, len+1): 
         temp = lt.getElement(list, pos)
         artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
-    for pos in range(size-4, size+1): 
+    for pos in range(size-len+1, size+1): 
         temp = lt.getElement(list, pos)
         artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
     
