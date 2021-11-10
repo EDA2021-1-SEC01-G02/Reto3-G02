@@ -217,7 +217,7 @@ def mapSights(sights,sightsNum,minLon,minLat,maxLon,maxLat):
     mapSight = folium.Map(location=[minLat,minLon],zoom_start=3) #Creacion del mapa
     for i in range (1,sightsNum+1): #Recorrer registros
         sight = lt.getElement(sights,i) #Obtener un registro
-        strInfo = """<table class="default"> 
+        strInfo = """<table border cellpadding=10"> 
         <tr>
         <th>City</th>
         <th>Datetime</th>
@@ -226,18 +226,18 @@ def mapSights(sights,sightsNum,minLon,minLat,maxLon,maxLat):
         <th>Comments</th>
         </tr>
         <tr>
-        <td>""",sight["city"],"""</td>
-        <td>""",sight["datetime"],"""</td>
-        <td>""",sight["duration (seconds)"],"""</td>
-        <td>""",sight["shape"],"""</td>
-        <td>""",sight["comments"],"""</td>
+        <td>"""+sight["city"]+"""</td>
+        <td>"""+sight["datetime"]+"""</td>
+        <td>"""+sight["duration (seconds)"]+"""</td>
+        <td>"""+sight["shape"]+"""</td>
+        <td>"""+sight["comments"]+"""</td>
         </tr>
         </table>
         """ #Creacion de los datos en tabla tipo HTML
         folium.Marker([sight["latitude"],sight["longitude"]], popup=strInfo).add_to(mapSight) #Añadir ubicacion
 
-    highlightedArea = folium.GeoJson(
-        data={"type":"Polygon","coordinates":[[[minLat,minLon], [maxLat,minLon], [maxLat,maxLon], [minLon,maxLon]]]})
+    highlightedArea = folium.GeoJson(data={"type": "Polygon", "coordinates": [[[maxLon,minLat], [maxLon,maxLat], [minLon,maxLat], [minLon,minLat]]]})
+    highlightedArea.add_child(folium.Popup("Area solicitada"))
     highlightedArea.add_to(mapSight)
 
     mapSight.save("index.html") #Guardado del mapa
