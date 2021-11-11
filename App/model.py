@@ -161,7 +161,6 @@ def countTime(catalog,timeMin,timeMax):
     latestDF = pd.DataFrame.from_dict(latestTime, orient='index', columns= ["time","count"])
 
     ms.sort(result,sortHours)
-    print(result)
     differentTimes = om.size(map) #Horas registradas unicas
     rangeSize = lt.size(result) #Cantidad de vistas en el rango de horas
     table = agregarTabla(result,3) #Obtener los 3 primeros y 3 ultimos
@@ -335,6 +334,7 @@ def getTen(list):
 def agregarTabla(list,len):
     artStr = { }
     size = lt.size(list)
+    
     if len == 5:
         for pos in range(1, len+1): 
             temp = lt.getElement(list, pos)
@@ -343,6 +343,11 @@ def agregarTabla(list,len):
             temp = lt.getElement(list, pos)
             artStr[pos] = temp['datetime'],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'],temp['date posted'], temp['latitude'] , temp['longitude'] 
         return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', 'city', 'state', 'country', 'shape', 'duration (seconds)', 'date posted', 'latitude', 'longitude']))
+    elif size <= 6:
+        for pos in range(1,size+1):
+            temp = lt.getElement(list, pos)
+            artStr[pos] = temp['datetime'],temp['datetime'][:10],temp['city'],temp['state'], temp['country'],temp['shape'],temp['duration (seconds)'] 
+        return  (pd.DataFrame.from_dict(artStr, orient='index', columns= ['datetime', "date", 'city', 'state', 'country', 'shape', 'duration (seconds)']))             
     else:
         for pos in range(1, len+1): 
             temp = lt.getElement(list, pos)
