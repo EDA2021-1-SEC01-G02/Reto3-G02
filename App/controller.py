@@ -23,7 +23,7 @@
 import config as cf
 import model
 import csv
-import time 
+#import time 
 #Iniciar: start_time = time.process_time()
 
 #Terminar: stop_time = time.process_time()
@@ -39,7 +39,7 @@ def init():
     return model.init()
  
 def loadData(catalog):
-    file = cf.data_dir + 'UFOS/UFOS-utf8-small.csv'
+    file = cf.data_dir + 'UFOS/UFOS-utf8-large.csv'
     input_file = csv.DictReader(open(file, encoding="utf-8"),
                                 delimiter=",")
     for sight in input_file:

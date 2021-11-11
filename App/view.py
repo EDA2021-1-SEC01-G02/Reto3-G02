@@ -25,6 +25,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+import time
 
 
 """
@@ -54,25 +55,33 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+        #start_time = time.process_time()
         catalog = controller.init()
         to_print = controller.loadData(catalog)
+        #stop_time = time.process_time()
         print('Numero de elementos: %s \n' 'Alto del arbol: %s'  %(to_print[0][0],to_print[0][1]))
         print('Primera fecha donde huvo un avistamiento: ' + str(to_print[1]))
         print('Ultima fecha donde huvo un avistamiento: ' + str(to_print[2]))
         print(controller.flElements(catalog['sights']))
+        #print((stop_time - start_time)*1000)
 
     elif int(inputs[0]) == 2:
         ciudad = input("Digite la ciudad a consultar: ")
+        #start_time = time.process_time()
         resultados = controller.countCity(catalog,ciudad)
+        #stop_time = time.process_time()
         print('\n''El numero de ciudades (elementos del map) es: %s \n' 'El alto del arbol es de: %s' %(resultados[0], resultados[1]))
         print('En %s hay %s avistamientos' %(ciudad.capitalize(), resultados[2]))
         print(resultados[3])
+        #print((stop_time - start_time)*1000)
 
     elif int(inputs[0]) == 3:
         sights = controller.maxDuration(catalog)
         min = float(input('Ingrese el valor minimo del rango: '))
         max = float(input('Ingrese el valor maximo del rango: '))
+        #start_time = time.process_time()
         range = controller.getDurRange(catalog, min, max)
+        #stop_time = time.process_time()
         print('Hay %s diferentes duraciones de avistamiendo de OVNIS.' %(sights[1]))
         print('La mayor duracion de un avistamiento es:')
         print('Duration (seconds): %s. ' %(sights[0]))
@@ -80,64 +89,67 @@ while True:
         print('Hay %s avistamientos que duraron entre %s y %s' %(range[1], min, max))
         print('Los tres primero y los tres ultimos avistamientos del rango son:')
         print(range[0])
-        pass
+        #print((stop_time - start_time)*1000)
 
     #Requerimiento 3
-    elif int(inputs[0]) == 4: #TODO: Usar valores que el usuario escriba
+    elif int(inputs[0]) == 4:
         print("Recuerde que usted debe digitar el tiempo en el formato de HH:MM ")
-        fechaInf = input("Ingrese el limite inferior: ")
-        horaInf = "20:45"
-        fechaSup = input("Ingrese el limite superior: ")
-        horaSup = "23:15"
+        horaInf = input("Ingrese el limite inferior: ")
+        horaSup = input("Ingrese el limite superior: ")
+        #start_time = time.process_time()
         resultado = controller.countTime(catalog,horaInf,horaSup)
+        #stop_time = time.process_time()
         print("Hay %s horas unicas en los registros..." %(resultado[0]))
         print("El registro con la hora mas tarde es:")
         print(resultado[1])
         print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],horaInf,horaSup))
         print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
         print(resultado[3])
+        #print((stop_time - start_time)*1000)
 
     #Requerimiento 4
-    elif int(inputs[0]) == 5: #TODO: Usar valores que el usuario escriba
+    elif int(inputs[0]) == 5:
         print("Recuerde que usted debe digitar la fecha en el formato de AAAA-MM-DD")
         fechaInf = input("Ingrese el limite inferior: ")
-        fechaInf = "1945-08-06"
         fechaSup = input("Ingrese el limite superior: ")
-        fechaSup = "1984-11-15"
+        #start_time = time.process_time()
         resultado = controller.countDate(catalog,fechaInf,fechaSup)
+        #stop_time = time.process_time()
         print("Hay %s fechas unicas en los registros..." %(resultado[0]))
         print("El registro con la fecha mas antigua es:")
         print(resultado[1])
         print("Hay un total de %s avistamientos entre: %s y %s" %(resultado[2],fechaInf,fechaSup))
         print("Los primeros tres y ultimos 3 avistamientos de OVNIS en este rango son:")
         print(resultado[3])
+        #print((stop_time - start_time)*1000)
     
     elif int(inputs[0]) == 6:
-        minLon =  float(input('Digite la longitud minima del rango: '))
+        minLon = float(input('Digite la longitud minima del rango: '))
         maxLon = float(input('Digite la longitud maxima del rango: '))
         minLat = float(input('Digite la latitud minima del rango: '))
         maxLat = float(input('Digite la latitud maxima del rango: '))
+
+        #start_time = time.process_time()
         result = (controller.getAreaRange(catalog, minLon, maxLon, minLat, maxLat ))
+        #stop_time = time.process_time()
         print('Avistamientos de OVNIS en una longitud entre el rango de %s y %s'%(minLon, maxLon))
         print('y en una latitud entre el rango de %s y %s' %(minLat, maxLat))
         print('Hay %s avistamientos diferentes en el area.'%(result[1]))
         print(result[0])
-
+        #print((stop_time - start_time)*1000)
         pass
 
     elif int(inputs[0]) == 7:
-        #minLon = float(input('Digite la longitud minima del rango: '))
-        #maxLon = float(input('Digite la longitud maxima del rango: '))
-        #minLat = float(input('Digite la latitud minima del rango: '))
-        #maxLat = float(input('Digite la latitud maxima del rango: '))
+        minLon = float(input('Digite la longitud minima del rango: '))
+        maxLon = float(input('Digite la longitud maxima del rango: '))
+        minLat = float(input('Digite la latitud minima del rango: '))
+        maxLat = float(input('Digite la latitud maxima del rango: '))
 
-        minLon = -109.05
-        maxLon = -103.00
-        minLat = 31.33
-        maxLat = 37.00
-
+        #start_time = time.process_time()
         controller.showAreaRange(catalog,minLon,maxLon,minLat,maxLat)
+        #stop_time = time.process_time()
         print("Revisar el archivo index.html que se ha creado o actualizado en la raiz del repositorio.")
+        #print((stop_time - start_time)*1000)
 
         
 
